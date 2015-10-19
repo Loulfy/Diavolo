@@ -1,0 +1,6 @@
+courriel=lorian.corbel@etu.u-bordeaux.fr
+compte=lcorbel
+nom=Corbel
+prenom=Lorian
+groupe=S3A
+application=lcorbel/diavolo/IA
