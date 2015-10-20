@@ -135,6 +135,7 @@ public class Diavolo
 						g.addBridge(x1, y1, x2, y2);
 						*/
 						// STOP
+						stop = true;
 						return new Action(Type.STOP);
 					}
 									
@@ -173,8 +174,15 @@ public class Diavolo
 			}
 		}
 		else
-		{			
-			ac = null;
+		{	
+			if(colored)
+			{
+				ac = new Action(Type.STOP);
+			}
+			else
+			{
+				ac = null;
+			}
 		}
 		
 		return ac;

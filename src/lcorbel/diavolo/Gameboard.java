@@ -167,6 +167,14 @@ public class Gameboard
 			recRoutePawn(x, y);
 			if(island > 4){ok=false;}
 			pawns[x][y] = 0;
+			
+			// Sixth : island without sand
+			fillVisited(false);
+			pawns[x][y] = player;
+			
+			diagRecRoutePawn(x, y);
+			pawns[x][y] = 0;
+			if(island == 5){ok=false;}
 		}
 		else
 		{
@@ -275,10 +283,29 @@ public class Gameboard
 		{
 			island++;
 			visited[x][y] = true;
+			
 			recRoutePawn(x-1, y);
 			recRoutePawn(x+1, y);
 			recRoutePawn(x, y-1);
 			recRoutePawn(x, y+1);
+		}
+	}
+	
+	private void diagRecRoutePawn(int x, int y)
+	{
+		if(pawns[x][y]*player > 0 && !visited[x][y])
+		{
+			visited[x][y] = true;
+			
+			if(pawns[x+1][y+1]*player > 0 && island == 4){island=5;}
+			if(pawns[x+1][y-1]*player > 0 && island == 4){island=5;}
+			if(pawns[x-1][y-1]*player > 0 && island == 4){island=5;}
+			if(pawns[x-1][y+1]*player > 0 && island == 4){island=5;}
+			
+			diagRecRoutePawn(x-1, y);
+			diagRecRoutePawn(x+1, y);
+			diagRecRoutePawn(x, y-1);
+			diagRecRoutePawn(x, y+1);
 		}
 	}
 	
