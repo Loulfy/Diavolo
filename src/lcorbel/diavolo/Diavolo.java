@@ -77,9 +77,7 @@ public class Diavolo
 	}
 	
 	public Action play(Action ac)
-	{
-		Action rac = null;
-		
+	{		
 		if(ac != null)
 		{
 			nextAction(ac);
@@ -99,7 +97,7 @@ public class Diavolo
 			return nextAction();
 		}
 		
-		return rac;
+		return null;
 	}
 	
 	public Action nextAction()
@@ -119,13 +117,14 @@ public class Diavolo
 				
 				if(g.lastMovePawn)
 				{
-					if(g.canAddPawn(x1, y1) && g.canAddPawn(x2, y2))
+					if(x1 > 0 && y1 > 0 && x2 > 0 && y2 > 0)
 					{
 						g.addPawn(x1, y1);
 						g.addPawn(x2, y2);
 					}
 					else
 					{
+						/*
 						g.nextMove();
 						
 						x1 = g.lastMove[0][0];
@@ -134,6 +133,9 @@ public class Diavolo
 						y2 = g.lastMove[1][1];
 						
 						g.addBridge(x1, y1, x2, y2);
+						*/
+						// STOP
+						return new Action(Type.STOP);
 					}
 									
 					ac = new Action(Type.PAWNS, x1, y1, x2, y2);
@@ -171,16 +173,8 @@ public class Diavolo
 			}
 		}
 		else
-		{
-			g.lastMovePawn = false;
-			g.nextMove();
-			
-			int x1 = g.lastMove[0][0];
-			int y1 = g.lastMove[0][1];
-			int x2 = g.lastMove[1][0];
-			int y2 = g.lastMove[1][1];
-			
-			g.addBridge(x1, y1, x2, y2);
+		{			
+			ac = null;
 		}
 		
 		return ac;
