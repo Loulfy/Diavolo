@@ -4,7 +4,6 @@ public class Diavolo
 {		
 	private boolean alive;
 	private boolean stop;
-	private int size;
 	
 	private boolean colored;
 	private boolean chooseColor;
@@ -17,7 +16,6 @@ public class Diavolo
 	{
 		this.alive = true;
 		this.stop = false;
-		this.size = size;
 		
 		this.colored = true;
 		this.chooseColor = false;
@@ -55,15 +53,11 @@ public class Diavolo
 				if(!colored)
 				{
 					colored = true;
-					//g.switchPlayer();
-					g.lastMove[0][0] = size;
-					g.lastMove[0][1] = 0;
-					g.lastMove[1][0] = size;
-					g.lastMove[1][1] = size;
-					//System.out.println("switch");
+					System.out.println("foncé");
 				}
 				else
 				{
+					System.out.println("clair");
 					colored = false;
 				}
 				break;
@@ -75,7 +69,6 @@ public class Diavolo
 				g.addPawn(x1, y1);
 				g.addPawn(x2, y2);
 				g.switchPlayer();
-				System.out.println("switch"+g.player);
 				break;
 			case STOP:
 				if(!colored)
@@ -84,6 +77,7 @@ public class Diavolo
 				}
 				else
 				{
+					System.out.println("ok");
 					g.switchPlayer();
 				}
 				break;
@@ -123,83 +117,50 @@ public class Diavolo
 		
 		if(!stop)
 		{
-			if(!firstTurn)
+			firstTurn = false;
+			
+			// NEXT MOVE IA
+			g.nextMove();
+			
+			// Get the move
+			int x1 = g.lastMove[0][0];
+			int y1 = g.lastMove[0][1];
+			int x2 = g.lastMove[1][0];
+			int y2 = g.lastMove[1][1];
+				
+			System.out.println(x1+":"+y1+"|"+x2+":"+y2);
+			
+			// If i can play
+			if(g.lastMove[0][0] != 0)
 			{
-				g.nextMove();
-				
-				int x1 = g.lastMove[0][0];
-				int y1 = g.lastMove[0][1];
-				int x2 = g.lastMove[1][0];
-				int y2 = g.lastMove[1][1];
-				
-				System.out.println(x1+":"+y1+"|"+x2+":"+y2);
-				
-				if(g.lastMove[0][0] != 0)
-				{
-					if(g.lastMovePawn)
-					{
-						g.addPawn(x1, y1);
-						g.addPawn(x2, y2);
-						
-						ac = new Action(Type.PAWNS, x1, y1, x2, y2);
-					}
-					else
-					{
-						g.addBridge(x1, y1, x2, y2);
-						
-						ac = new Action(Type.BRIDGE, x1, y1, x2, y2);
-					}
-				}
-				else
-				{
-					// STOP
-					System.out.println("stop");
-					stop = true;
-					return new Action(Type.STOP);
-				}
-				
-				/*
+				// pawns
 				if(g.lastMovePawn)
 				{
-					if(g.lastMove[0][0] != 0)
-					{
-						g.addPawn(x1, y1);
-						g.addPawn(x2, y2);
-					}
-					else
-					{
-						// STOP
-						stop = true;
-						return new Action(Type.STOP);
-					}
-									
+					g.addPawn(x1, y1);
+					g.addPawn(x2, y2);
+						
 					ac = new Action(Type.PAWNS, x1, y1, x2, y2);
 				}
+				// bridge
 				else
 				{
 					g.addBridge(x1, y1, x2, y2);
-					
+						
 					ac = new Action(Type.BRIDGE, x1, y1, x2, y2);
-				}*/
-				
-				g.switchPlayer();
+				}
+			}
+			// Else STOP
+			else
+			{
+				System.out.println("stop");
+				stop = true;
+				ac = new Action(Type.STOP);
 			}
 			
-			if(!colored && firstTurn)
-			{
-				g.addPawn(1, 1);
-				g.addPawn(1, 2);
-				ac = new Action(Type.PAWNS, 1, 1, 1, 2);
-				
-				g.lastMove[0][0] = 1;
-				g.lastMove[0][1] = 1;
-				g.lastMove[1][0] = 1;
-				g.lastMove[1][1] = 2;
-				
-				firstTurn = false;
-				
-				g.switchPlayer();
-			}
+			// -- SWITCH PLAYER --
+			g.switchPlayer();
+
+			// If you can, take the white !
 			if(colored && firstTurn)
 			{
 				ac = new Action(Type.LIGHT);
@@ -210,6 +171,8 @@ public class Diavolo
 		}
 		else
 		{	
+			// Game STOP
+			// waiting...
 			if(colored)
 			{
 				System.out.println("stop");
