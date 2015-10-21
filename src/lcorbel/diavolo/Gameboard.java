@@ -6,7 +6,7 @@ public class Gameboard
 {
 	public int size;
 	
-	private int player;
+	public int player;
 	private int island;
 	
 	public int lastMove[][];
@@ -18,6 +18,7 @@ public class Gameboard
 	private int pawns[][];
 	private int bridges[][];
 	private boolean visited[][];
+	private boolean visitedDiag[][];
 	
 	private final int orientation[][] = {{2,0},{2,1},{2,2},{1,2},{0,2},{-1,2},{-2,2},{-2,1},{-2,0},{-2,-1},{-2,-2},{-1,-2},{0,-2},{1,-2},{2,-2},{2,-1}};
 	
@@ -28,6 +29,7 @@ public class Gameboard
 		this.pawns = new int[size+2][size+2];
 		this.bridges = new int[size+2][size+2];
 		this.visited = new boolean[size+2][size+2];
+		this.visitedDiag = new boolean[size+2][size+2];
 		
 		this.lastMove = new int[2][2];
 		this.lastMove[0][0] = size;
@@ -50,6 +52,7 @@ public class Gameboard
 			this.pawns[i] = gb.pawns[i].clone();
 			this.bridges[i] = gb.pawns[i].clone();
 			this.visited[i] = gb.visited[i].clone();
+			this.visitedDiag[i] = gb.visitedDiag[i].clone();
 		}
 		for(int i=0; i < 2; i++)
 		{
@@ -169,12 +172,12 @@ public class Gameboard
 			pawns[x][y] = 0;
 			
 			// Sixth : island without sand
-			fillVisited(false);
-			pawns[x][y] = player;
-			
-			diagRecRoutePawn(x, y);
-			pawns[x][y] = 0;
-			if(island == 5){ok=false;}
+			fillVisitedDiag(false);
+			if (island == 4 && diagRecRoutePawn(x, y))
+			{
+				pawns[x][y] = 0;
+				ok=false;
+			}
 		}
 		else
 		{
@@ -277,6 +280,14 @@ public class Gameboard
 		}
 	}
 	
+	private void fillVisitedDiag(boolean value)
+	{
+		for(boolean[] array : visitedDiag)
+		{
+			Arrays.fill(array, value);
+		}
+	}
+	
 	private void recRoutePawn(int x, int y)
 	{
 		if(pawns[x][y]*player > 0 && !visited[x][y])
@@ -291,22 +302,23 @@ public class Gameboard
 		}
 	}
 	
-	private void diagRecRoutePawn(int x, int y)
+	private boolean diagRecRoutePawn(int x, int y)
 	{
-		if(pawns[x][y]*player > 0 && !visited[x][y])
+		if(visited[x][y] && !visitedDiag[x][y])
 		{
-			visited[x][y] = true;
-			
-			if(pawns[x+1][y+1]*player > 0 && island == 4){island=5;}
-			if(pawns[x+1][y-1]*player > 0 && island == 4){island=5;}
-			if(pawns[x-1][y-1]*player > 0 && island == 4){island=5;}
-			if(pawns[x-1][y+1]*player > 0 && island == 4){island=5;}
-			
-			diagRecRoutePawn(x-1, y);
-			diagRecRoutePawn(x+1, y);
-			diagRecRoutePawn(x, y-1);
-			diagRecRoutePawn(x, y+1);
+			visitedDiag[x][y] = true;
+			if(pawns[x-1][y-1]*player > 0 && !visited[x-1][y-1]){return false;}
+			else if(pawns[x-1][y+1]*player > 0 && !visited[x-1][y+1]){return false;}
+			else if(pawns[x+1][y-1]*player > 0 && !visited[x+1][y-1]){return false;}
+			else if(pawns[x+1][y+1]*player > 0 && !visited[x+1][y+1]){return false;}
+
+			if(!diagRecRoutePawn(x, y-1)){return false;}
+			if(!diagRecRoutePawn(x-1, y)){return false;}
+			if(!diagRecRoutePawn(x+1, y)){return false;}
+			if(!diagRecRoutePawn(x, y+1)){return false;}
+			return true;
 		}
+		return true;
 	}
 	
 	private void setRecRoutePawn(int x, int y)
@@ -395,10 +407,10 @@ public class Gameboard
 				}
 			}
 		}
-		if(y1 > size)
+		if(y1 > size || y2 > size)
 		{
 			lastMove[0][0] = size;
-			lastMove[0][1] = 1;
+			lastMove[0][1] = 0;
 			lastMove[1][0] = size-2;
 			lastMove[1][1] = 0;
 			nextMoveBridge();
@@ -436,7 +448,7 @@ public class Gameboard
 			int vec[] = dirToVec(dir);
 			x2 = x1+vec[0];
 			y2 = y1+vec[1];
-			if(canAddBridge(x1, y1, x2, y2))
+			if(x2 > 0 && x2 <= size && y2 <= size && canAddBridge(x1, y1, x2, y2))
 			{
 				lastMove[0][0] = x1;
 				lastMove[0][1] = y1;

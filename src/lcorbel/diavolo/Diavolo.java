@@ -4,6 +4,7 @@ public class Diavolo
 {		
 	private boolean alive;
 	private boolean stop;
+	private int size;
 	
 	private boolean colored;
 	private boolean chooseColor;
@@ -16,6 +17,7 @@ public class Diavolo
 	{
 		this.alive = true;
 		this.stop = false;
+		this.size = size;
 		
 		this.colored = true;
 		this.chooseColor = false;
@@ -53,6 +55,16 @@ public class Diavolo
 				if(!colored)
 				{
 					colored = true;
+					//g.switchPlayer();
+					g.lastMove[0][0] = size;
+					g.lastMove[0][1] = 0;
+					g.lastMove[1][0] = size;
+					g.lastMove[1][1] = size;
+					//System.out.println("switch");
+				}
+				else
+				{
+					colored = false;
 				}
 				break;
 			case BRIDGE:
@@ -63,11 +75,16 @@ public class Diavolo
 				g.addPawn(x1, y1);
 				g.addPawn(x2, y2);
 				g.switchPlayer();
+				System.out.println("switch"+g.player);
 				break;
 			case STOP:
-				if(colored)
+				if(!colored)
 				{
 					stop = true;
+				}
+				else
+				{
+					g.switchPlayer();
 				}
 				break;
 			case END:
@@ -115,25 +132,42 @@ public class Diavolo
 				int x2 = g.lastMove[1][0];
 				int y2 = g.lastMove[1][1];
 				
+				System.out.println(x1+":"+y1+"|"+x2+":"+y2);
+				
+				if(g.lastMove[0][0] != 0)
+				{
+					if(g.lastMovePawn)
+					{
+						g.addPawn(x1, y1);
+						g.addPawn(x2, y2);
+						
+						ac = new Action(Type.PAWNS, x1, y1, x2, y2);
+					}
+					else
+					{
+						g.addBridge(x1, y1, x2, y2);
+						
+						ac = new Action(Type.BRIDGE, x1, y1, x2, y2);
+					}
+				}
+				else
+				{
+					// STOP
+					System.out.println("stop");
+					stop = true;
+					return new Action(Type.STOP);
+				}
+				
+				/*
 				if(g.lastMovePawn)
 				{
-					if(x1 > 0 && y1 > 0 && x2 > 0 && y2 > 0)
+					if(g.lastMove[0][0] != 0)
 					{
 						g.addPawn(x1, y1);
 						g.addPawn(x2, y2);
 					}
 					else
 					{
-						/*
-						g.nextMove();
-						
-						x1 = g.lastMove[0][0];
-						y1 = g.lastMove[0][1];
-						x2 = g.lastMove[1][0];
-						y2 = g.lastMove[1][1];
-						
-						g.addBridge(x1, y1, x2, y2);
-						*/
 						// STOP
 						stop = true;
 						return new Action(Type.STOP);
@@ -146,7 +180,7 @@ public class Diavolo
 					g.addBridge(x1, y1, x2, y2);
 					
 					ac = new Action(Type.BRIDGE, x1, y1, x2, y2);
-				}
+				}*/
 				
 				g.switchPlayer();
 			}
@@ -171,12 +205,14 @@ public class Diavolo
 				ac = new Action(Type.LIGHT);
 				
 				firstTurn = false;
+				colored = false;
 			}
 		}
 		else
 		{	
 			if(colored)
 			{
+				System.out.println("stop");
 				ac = new Action(Type.STOP);
 			}
 			else
