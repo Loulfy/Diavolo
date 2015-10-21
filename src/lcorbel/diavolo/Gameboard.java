@@ -75,13 +75,13 @@ public class Gameboard
 		{
 			for(int x=0; x < size+2; x++)
 			{
-				if(pawns[y][x] < 0)
+				if(pawns[x][y] < 0)
 				{
-					aff+=(pawns[y][x])+" ";
+					aff+=(pawns[x][y])+" ";
 				}
 				else
 				{
-					aff+="."+(pawns[y][x])+" ";
+					aff+="."+(pawns[x][y])+" ";
 				}
 			}
 			aff+="\n";
@@ -92,13 +92,13 @@ public class Gameboard
 		{
 			for(int x=0; x < size+2; x++)
 			{
-				if(bridges[y][x] < 10)
+				if(bridges[x][y] < 10)
 				{
-					aff+="."+(bridges[y][x])+" ";
+					aff+="."+(bridges[x][y])+" ";
 				}
 				else
 				{
-					aff+=(bridges[y][x])+" ";
+					aff+=(bridges[x][y])+" ";
 				}
 				
 			}
@@ -111,6 +111,12 @@ public class Gameboard
 	public void switchPlayer()
 	{
 		player = -player;
+		lastMove[0][0] = size;
+		lastMove[0][1] = 0;
+		lastMove[1][0] = size;
+		lastMove[1][1] = size;
+		
+		lastMovePawn = true;
 	}
 	
 	public void savePawns()
